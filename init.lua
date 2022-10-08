@@ -26,19 +26,19 @@ local config = {
   },
 
   -- Set colorscheme to use
-  colorscheme = "default_theme",
+  colorscheme = "dayfox",
 
   -- Override highlight groups in any theme
   highlights = {
     -- duskfox = { -- a table of overrides/changes to the default
     --   Normal = { bg = "#000000" },
     -- },
-    default_theme = function(highlights) -- or a function that returns a new table of colors to set
-      local C = require "default_theme.colors"
+    -- default_theme = function(highlights) -- or a function that returns a new table of colors to set
+    --   local C = require "default_theme.colors"
 
-      highlights.Normal = { fg = C.fg, bg = C.bg }
-      return highlights
-    end,
+    --   highlights.Normal = { fg = C.fg, bg = C.bg }
+    --   return highlights
+    -- end,
   },
 
   -- set vim options here (vim.<first_key>.<second_key> =  value)
@@ -182,6 +182,38 @@ local config = {
   -- Configure plugins
   plugins = {
     init = {
+      {
+        "EdenEast/nightfox.nvim",
+        config = function()
+          require("nightfox").setup {
+            -- disable extra plugins that AstroNvim doesn't use (this is optional)
+            modules = { 
+              barbar = false,
+              dashboard = false,
+              fern = false,
+              fidget = false,
+              gitgutter = false,
+              glyph_palette = false,
+              illuminate = false,
+              lightspeed = false,
+              lsp_saga = false,
+              lsp_trouble = false,
+              modes = false,
+              neogit = false,
+              nvimtree = false,
+              pounce = false,
+              sneak = false,
+              symbols_outline = false,
+            },
+            groups = {
+              all = {
+                -- add highlight group for AstroNvim's built in URL highlighting
+                HighlightURL = { style = "underline" },
+              },
+            },
+          }
+        end,
+      },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 

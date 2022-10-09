@@ -7,30 +7,22 @@
 local config = {
 
   -- Configure AstroNvim updates
-  -- updater = {
-  --   remote = "origin", -- remote to use
-  --   channel = "nightly", -- "stable" or "nightly"
-  --   version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
-  --   branch = "main", -- branch name (NIGHTLY ONLY)
-  --   commit = nil, -- commit hash (NIGHTLY ONLY)
-  --   pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
-  --   skip_prompts = false, -- skip prompts about breaking changes
-  --   show_changelog = true, -- show the changelog after performing an update
-  --   auto_reload = false, -- automatically reload and sync packer after a successful update
-  --   auto_quit = false, -- automatically quit the current session after a successful update
-  --   -- remotes = { -- easily add new remotes to track
-  --   --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
-  --   --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
-  --   --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
-  --   -- },
-  -- },
   updater = {
-    channel = "nightly",
-    branch = "fix-filetype-detection",
-    remote = "benvds",
-    remotes = {
-      ["benvds"] = "benvds/AstroNvim",
-    },
+    remote = "origin", -- remote to use
+    channel = "nightly", -- "stable" or "nightly"
+    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+    branch = "main", -- branch name (NIGHTLY ONLY)
+    commit = nil, -- commit hash (NIGHTLY ONLY)
+    pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
+    skip_prompts = false, -- skip prompts about breaking changes
+    show_changelog = true, -- show the changelog after performing an update
+    auto_reload = false, -- automatically reload and sync packer after a successful update
+    auto_quit = false, -- automatically quit the current session after a successful update
+    -- remotes = { -- easily add new remotes to track
+    --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
+    --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
+    --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
+    -- },
   },
 
   -- Set colorscheme to use
@@ -132,9 +124,49 @@ local config = {
         -- ["<leader>lf"] = false -- disable formatting keymap
       },
     },
+
+    formatting = {
+      format_on_save = true, -- enable or disable automatic formatting on save
+      timeout_ms = 3200, -- adjust the timeout_ms variable for formatting
+      -- disabled = { "sumneko_lua" },
+      filter = function(client)
+        -- only enable null-ls for javascript files
+        if vim.bo.filetype == "typescript" then
+          return client.name == "null-ls"
+        end
+
+        -- enable all other clients
+        return true
+      end,
+    },
+
     -- add to the global LSP on_attach function
-    -- on_attach = function(client, bufnr)
-    -- end,
+    on_attach = function(client, bufnr)
+      -- This should be automatic ??!!
+      if client.resolved_capabilities.document_formatting then
+        vim.api.nvim_create_autocmd("BufWritePre", {
+          desc = "Auto format before save",
+          pattern = "<buffer>",
+          callback = function()
+            -- vim.lsp.buf.formatting_sync(nil, 3000)
+            vim.lsp.buf.format {
+              filter = function(client)
+                -- only enable null-ls for javascript files
+                if vim.bo.filetype == "typescript" then
+                  return client.name == "null-ls"
+                end
+
+                -- enable all other clients
+                return true
+              end,
+            }
+          end,
+        })
+      end
+      -- if client.server_capabilities.documentFormattingProvider then
+      --   vim.api.nvim_del_augroup_by_name "auto_format"
+      -- end
+    end,
 
     -- override the mason server-registration function
     -- server_registration = function(server, opts)
@@ -190,11 +222,10 @@ local config = {
   -- Configure plugins
   plugins = {
     init = {
-      {
       -------------------------------------------------------------
       -- Theme
       -------------------------------------------------------------
-
+      {
         "EdenEast/nightfox.nvim",
         config = function()
           require("nightfox").setup {
@@ -226,7 +257,6 @@ local config = {
           }
         end,
       },
-      
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 
@@ -252,7 +282,7 @@ local config = {
     -- All other entries override the require("<key>").setup({...}) call for default plugins
     ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
       -- config variable is the default configuration table for the setup functino call
-      -- local null_ls = require "null-ls"
+      local null_ls = require "null-ls"
 
       -- Check supported formatters and linters
       -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
@@ -264,15 +294,28 @@ local config = {
       }
       -- set up null-ls's on_attach function
       -- NOTE: You can uncomment this on attach function to enable format on save
-      config.on_attach = function(client)
-        if client.resolved_capabilities.document_formatting then
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            desc = "Auto format before save",
-            pattern = "<buffer>",
-            callback = vim.lsp.buf.formatting_sync,
-          })
-        end
-      end
+      -- config.on_attach = function(client)
+      --   if client.resolved_capabilities.document_formatting then
+      --     vim.api.nvim_create_autocmd("BufWritePre", {
+      --       desc = "Auto format before save",
+      --       pattern = "<buffer>",
+      --       callback = function()
+      --         -- vim.lsp.buf.formatting_sync(nil, 3000)
+      --         vim.lsp.buf.format {
+      --           filter = function(client)
+      --             -- only enable null-ls for javascript files
+      --             if vim.bo.filetype == "typescript" then
+      --               return client.name == "null-ls"
+      --             end
+
+      --             -- enable all other clients
+      --             return true
+      --           end,
+      --         }
+      --       end,
+      --     })
+      --   end
+      -- end
       return config -- return final config table to use in require("null-ls").setup(config)
     end,
     treesitter = { -- overrides `require("treesitter").setup(...)`

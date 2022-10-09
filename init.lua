@@ -7,22 +7,30 @@
 local config = {
 
   -- Configure AstroNvim updates
+  -- updater = {
+  --   remote = "origin", -- remote to use
+  --   channel = "nightly", -- "stable" or "nightly"
+  --   version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+  --   branch = "main", -- branch name (NIGHTLY ONLY)
+  --   commit = nil, -- commit hash (NIGHTLY ONLY)
+  --   pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
+  --   skip_prompts = false, -- skip prompts about breaking changes
+  --   show_changelog = true, -- show the changelog after performing an update
+  --   auto_reload = false, -- automatically reload and sync packer after a successful update
+  --   auto_quit = false, -- automatically quit the current session after a successful update
+  --   -- remotes = { -- easily add new remotes to track
+  --   --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
+  --   --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
+  --   --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
+  --   -- },
+  -- },
   updater = {
-    remote = "origin", -- remote to use
-    channel = "nightly", -- "stable" or "nightly"
-    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
-    branch = "main", -- branch name (NIGHTLY ONLY)
-    commit = nil, -- commit hash (NIGHTLY ONLY)
-    pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
-    skip_prompts = false, -- skip prompts about breaking changes
-    show_changelog = true, -- show the changelog after performing an update
-    auto_reload = false, -- automatically reload and sync packer after a successful update
-    auto_quit = false, -- automatically quit the current session after a successful update
-    -- remotes = { -- easily add new remotes to track
-    --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
-    --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
-    --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
-    -- },
+    channel = "nightly",
+    branch = "fix-filetype-detection",
+    remote = "benvds",
+    remotes = {
+      ["benvds"] = "benvds/AstroNvim",
+    },
   },
 
   -- Set colorscheme to use
@@ -33,12 +41,12 @@ local config = {
     -- duskfox = { -- a table of overrides/changes to the default
     --   Normal = { bg = "#000000" },
     -- },
-    -- default_theme = function(highlights) -- or a function that returns a new table of colors to set
-    --   local C = require "default_theme.colors"
+    default_theme = function(highlights) -- or a function that returns a new table of colors to set
+      local C = require "default_theme.colors"
 
-    --   highlights.Normal = { fg = C.fg, bg = C.bg }
-    --   return highlights
-    -- end,
+      highlights.Normal = { fg = C.fg, bg = C.bg }
+      return highlights
+    end,
   },
 
   -- set vim options here (vim.<first_key>.<second_key> =  value)

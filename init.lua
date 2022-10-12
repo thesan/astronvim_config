@@ -131,7 +131,7 @@ local config = {
       -- disabled = { "sumneko_lua" },
       filter = function(client)
         -- only enable null-ls for javascript files
-        if vim.bo.filetype == "typescript" then
+        if vim.bo.filetype == "typescript" or vim.bo.filename == "typescriptreact" then
           return client.name == "null-ls"
         end
 
